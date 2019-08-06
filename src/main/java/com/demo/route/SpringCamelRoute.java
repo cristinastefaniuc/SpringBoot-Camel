@@ -3,6 +3,8 @@ package com.demo.route;
 import com.demo.model.PersonCsvRecord;
 import com.demo.service.PersonServiceImpl;
 import com.demo.util.CsvRecordToPersonMapper;
+import com.demo.util.JsonToPerson;
+import com.demo.util.PersonToJson;
 import lombok.RequiredArgsConstructor;
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.dataformat.bindy.csv.BindyCsvDataFormat;
@@ -20,6 +22,10 @@ public class SpringCamelRoute extends RouteBuilder {
     private final CsvRecordToPersonMapper mapper;
 
     private final PersonServiceImpl personService;
+
+    private final PersonToJson personToJson;
+
+    private final JsonToPerson jsonToPerson;
 
     @Value("${source.type}")
     private String sourceType;
@@ -46,9 +52,13 @@ public class SpringCamelRoute extends RouteBuilder {
                 .unmarshal(bindyCsvDataFormat)
                 .split(body())
                 .bean(mapper, "convertAndTransform")
+                .bean(personToJson, "convertToJson")
+                .to("activemq:queue:PERSON-QUEUE");
+
+        from("activemq:queue:PERSON-QUEUE")
+                .bean(jsonToPerson, "convertToPerson")
                 .bean(personService, "saveOrUpdate")
                 .end();
-
     }
 
     private String buildFileUrl() {
