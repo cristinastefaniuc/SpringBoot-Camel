@@ -23,10 +23,6 @@ public class SpringCamelRoute extends RouteBuilder {
 
     private final PersonServiceImpl personService;
 
-    private final PersonToJson personToJson;
-
-    private final JsonToPerson jsonToPerson;
-
     @Value("${source.type}")
     private String sourceType;
 
@@ -52,11 +48,11 @@ public class SpringCamelRoute extends RouteBuilder {
                 .unmarshal(bindyCsvDataFormat)
                 .split(body())
                 .bean(mapper, "convertAndTransform")
-                .bean(personToJson, "convertToJson")
+                .process(new PersonToJson())
                 .to("activemq:queue:PERSON-QUEUE");
 
         from("activemq:queue:PERSON-QUEUE")
-                .bean(jsonToPerson, "convertToPerson")
+                .process(new JsonToPerson())
                 .bean(personService, "saveOrUpdate")
                 .end();
     }
