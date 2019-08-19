@@ -50,7 +50,7 @@ public class SpringCamelRoute extends RouteBuilder {
                 .bean(mapper, "convertAndTransform")
                 .process(new PersonToJson())
                 .log("sending...")
-                .to("jms:queue:p_aq"); 
+                .to("jms:queue:p_aq");
 
         from("jms:queue:p_aq")
                 .process(new JsonToPerson())
