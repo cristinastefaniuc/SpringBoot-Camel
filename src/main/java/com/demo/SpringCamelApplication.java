@@ -10,7 +10,7 @@ import org.springframework.jms.annotation.EnableJms;
 @SpringBootApplication
 public class SpringCamelApplication {
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws Exception {
         ApplicationContext ctx = SpringApplication.run(SpringCamelApplication.class, args);
 
         CamelSpringBootApplicationController applicationController = ctx.getBean(CamelSpringBootApplicationController.class);

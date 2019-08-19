@@ -6,8 +6,6 @@ import org.apache.camel.Exchange;
 import org.apache.camel.Processor;
 import org.springframework.stereotype.Component;
 
-import java.io.IOException;
-
 @Component("jsonToPerson")
 public class JsonToPerson implements Processor {
 

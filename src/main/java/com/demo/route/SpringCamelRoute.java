@@ -39,7 +39,7 @@ public class SpringCamelRoute extends RouteBuilder {
     private boolean isRecursive;
 
     @Override
-    public void configure() {
+    public void configure() throws Exception {
 
         final BindyCsvDataFormat bindyCsvDataFormat = new BindyCsvDataFormat(PersonCsvRecord.class);
         bindyCsvDataFormat.setLocale("default");
@@ -49,9 +49,10 @@ public class SpringCamelRoute extends RouteBuilder {
                 .split(body())
                 .bean(mapper, "convertAndTransform")
                 .process(new PersonToJson())
-                .to("activemq:queue:PERSON-QUEUE");
+                .log("sending...")
+                .to("jms:queue:p_aq"); 
 
-        from("activemq:queue:PERSON-QUEUE")
+        from("jms:queue:p_aq")
                 .process(new JsonToPerson())
                 .bean(personService, "saveOrUpdate")
                 .end();
